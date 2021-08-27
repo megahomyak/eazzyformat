@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Union, Optional
+from typing import Union, Optional, List
 
 from eazzyformat.string_iterators import StringIteratorWithNewlinesCounting
 
@@ -35,15 +35,17 @@ class ListEnded(Exception):
     pass
 
 
+EazzyObject = Union[str, List["EazzyObject"]]
+
+
 @dataclass
 class ParsingResult:
-    parsed_object: Union[str, list]
+    parsed_object: EazzyObject
     rest_index: Optional[int]
 
 
 def _parse_eazzyformat_object(
-        string_iterator: StringIteratorWithNewlinesCounting
-        ) -> Union[str, list]:
+        string_iterator: StringIteratorWithNewlinesCounting) -> EazzyObject:
     try:
         character = string_iterator.skip(" \n\t")
     except StopIteration:

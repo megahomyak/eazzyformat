@@ -1,6 +1,6 @@
 from .parser import (
     parse_eazzyformat, UnclosedCharacter, UnexpectedCharacter, NothingToParse,
-    ListEnded, ParsingResult
+    ListEnded, ParsingResult, EazzyObject
 )
 from .string_iterators import (
     StringIteratorWithIndex, StringIteratorWithNewlinesCounting
@@ -10,5 +10,5 @@ from .string_iterators import (
 __all__ = [
     parse_eazzyformat, UnclosedCharacter, UnexpectedCharacter, NothingToParse,
     StringIteratorWithIndex, StringIteratorWithNewlinesCounting, ListEnded,
-    ParsingResult
+    ParsingResult, EazzyObject
 ]
