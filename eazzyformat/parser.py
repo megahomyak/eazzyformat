@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Union, Optional, List
+from typing import Union, Optional, List, Dict
 
 from eazzyformat.string_iterators import StringIteratorWithNewlinesCounting
 
@@ -45,7 +45,8 @@ class ParsingResult:
 
 
 def _parse_eazzyformat_object(
-        string_iterator: StringIteratorWithNewlinesCounting) -> EazzyObject:
+        string_iterator: StringIteratorWithNewlinesCounting,
+        cached_strings: Dict[str, str]) -> EazzyObject:
     try:
         character = string_iterator.skip(" \n\t")
     except StopIteration:
@@ -57,7 +58,9 @@ def _parse_eazzyformat_object(
             line_number = string_iterator.line_number
             while True:
                 try:
-                    parsed_object = _parse_eazzyformat_object(string_iterator)
+                    parsed_object = _parse_eazzyformat_object(
+                        string_iterator, cached_strings
+                    )
                 except NothingToParse:
                     raise UnclosedCharacter(
                         character_number, "[", line_number
@@ -74,6 +77,7 @@ def _parse_eazzyformat_object(
             line_number = string_iterator.line_number
             try:
                 string = string_iterator.collect_to("\"")
+                string = cached_strings.setdefault(string, string)
                 next(string_iterator)
                 return string
             except StopIteration:
@@ -93,7 +97,9 @@ def parse_eazzyformat(string: str) -> ParsingResult:
     Can raise NothingToParse
     """
     string_iterator = StringIteratorWithNewlinesCounting(string)
-    parsed_object = _parse_eazzyformat_object(string_iterator)
+    parsed_object = _parse_eazzyformat_object(
+        string_iterator, cached_strings={}
+    )
     text_after_object_index = string_iterator.index
     try:
         string_iterator.skip(" \n\t")
