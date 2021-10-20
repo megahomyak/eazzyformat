@@ -76,10 +76,13 @@ def _parse_eazzyformat_object(
             character_number = string_iterator.previous_character_number
             line_number = string_iterator.line_number
             try:
-                string = string_iterator.collect_to("\"")
-                string = cached_strings.setdefault(string, string)
-                next(string_iterator)
-                return string
+                string = ""
+                while True:
+                    string += string_iterator.collect_to("\"\\")
+                    if next(string_iterator) == "\"":
+                        return cached_strings.setdefault(string, string)
+                    else:  # \
+                        string += next(string_iterator)
             except StopIteration:
                 raise UnclosedCharacter(
                     character_number, "\"", line_number
