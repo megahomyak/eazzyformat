@@ -45,7 +45,7 @@ class ParsingResult:
     rest_index: Optional[int]
 
 
-REMOVE_INDENTATION_REGEX = re.compile(r"\n\s+")
+REMOVE_INDENTATION_REGEX = re.compile(r"\n[^\S\r\n]+")
 
 
 def _parse_eazzyformat_object(
