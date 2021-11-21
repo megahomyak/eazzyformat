@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from typing import Union, Optional, List, Dict
 
@@ -44,6 +45,9 @@ class ParsingResult:
     rest_index: Optional[int]
 
 
+REMOVE_INDENTATION_REGEX = re.compile(r"\n\s+")
+
+
 def _parse_eazzyformat_object(
         string_iterator: StringIteratorWithNewlinesCounting,
         cached_strings: Dict[str, str]) -> EazzyObject:
@@ -72,20 +76,21 @@ def _parse_eazzyformat_object(
             return parsed_objects_list
         elif character == "]":
             raise ListEnded
-        elif character == "\"":
+        elif character == '"':
             character_number = string_iterator.previous_character_number
             line_number = string_iterator.line_number
             try:
                 string = ""
                 while True:
-                    string += string_iterator.collect_to("\"\\")
-                    if next(string_iterator) == "\"":
+                    string += string_iterator.collect_to('"\\')
+                    if next(string_iterator) == '"':
+                        string = REMOVE_INDENTATION_REGEX.sub("\n", string)
                         return cached_strings.setdefault(string, string)
                     else:  # \
                         string += next(string_iterator)
             except StopIteration:
                 raise UnclosedCharacter(
-                    character_number, "\"", line_number
+                    character_number, '"', line_number
                 ) from None
         else:
             raise UnexpectedCharacter(
