@@ -1,8 +1,10 @@
-from collections import Iterator
 from typing import Container
 
 
-class StringIteratorWithIndex(Iterator):
+class StringIteratorWithIndex:
+
+    def __iter__(self):
+        return self
 
     def __init__(self, string: str, index=0):
         self.string = string

@@ -1,4 +1,2 @@
-eazzyformat.iml
-.idea
-setup.py
-MANIFEST
+**/__pycache__
+dist
